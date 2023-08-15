@@ -1,7 +1,14 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\ProductController;
+use App\Http\Controllers\Admin\PostController;
+use App\Http\Controllers\UserController;
+
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use Illuminate\Http\Request;
+use App\Http\Controllers\Doctors\Auth\LoginController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -12,16 +19,36 @@ use App\Http\Controllers\ProductController;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
-
-Route::get('/', function () {
-    return view('welcome');
+Auth::routes();
+Route::prefix('admin')->middleware('auth')->name('admin.')->group(function (){
+    Route::resource('posts',PostController::class);
+    Route::get('posts/create',[PostController::class,'create'])
+        ->middleware('can:posts.create')
+        ->name('posts.add');
+    Route::get('posts/{post}/edit',[PostController::class,'edit'])
+        ->can('posts.edit','post')
+        ->name('posts.edit');
 });
 
-Route::prefix('admin')->name('admin.')->group(function () {
-    Route::get('/', function () {
-        echo "Welcome";
-    });
-    Route::get('dashboard')->name('dashboard');
-});
-Route::get('product',[ProductController::class,'index'])->name('product.list');
-Route::post('product',[ProductController::class,'store'])->name('product.add');
+
+
+
+
+//Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+//Route::get('/email/verify', function () {
+//    return view('auth.verify');
+//})->middleware('auth')->name('verification.notice');
+//
+//Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
+//    $request->fulfill();
+//
+//    return redirect('/home');
+//})->middleware(['auth', 'signed'])->name('verification.verify');
+//
+//Route::post('/email/verification-notification', function (Request $request) {
+//    Auth::user()->sendEmailVerificationNotification();
+//
+//    return back()->with('message', 'Verification link sent!');
+//})->middleware(['auth', 'throttle:6,1'])->name('verification.send');
+//
+

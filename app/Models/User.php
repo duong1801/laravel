@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use App\Models\Scopes\AdminScope;
 
-class User extends Authenticatable
+class User extends Authenticatable implements MustVerifyEmail
 {
     use HasApiTokens, HasFactory, Notifiable;
 
@@ -21,8 +22,9 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'username',
     ];
-
+    protected $table = 'users';
     /**
      * The attributes that should be hidden for serialization.
      *
@@ -42,4 +44,13 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+
+    public function isAdmin()
+    {
+        if ($this->group_id == 1) {
+            return true;
+        }
+        return false;
+    }
 }
